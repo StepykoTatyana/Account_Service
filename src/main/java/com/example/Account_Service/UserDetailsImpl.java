@@ -16,9 +16,12 @@ public class UserDetailsImpl implements UserDetails {
     }
 
 
-    public UserDetailsImpl(Users users) {
-        username = users.getEmail();
-        password = users.getPassword();
+    public UserDetailsImpl(User user) {
+        System.out.println(user.getEmail());
+        System.out.println(user.getPassword());
+
+        username = user.getEmail();
+        password = user.getPassword();
     }
 
 

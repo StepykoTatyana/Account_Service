@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -44,6 +45,24 @@ public class ControllerExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
 
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<CustomErrorMessageUsers> validateException(
+            ConstraintViolationException m, HttpServletRequest request) {
+
+
+        CustomErrorMessageUsers body = new CustomErrorMessageUsers(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                m.getMessage(),
+                request.getServletPath());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+
+    }
+
+
 //    protected ResponseEntity<Object> handleMethodArgumentNotValid(
 //            MethodArgumentNotValidException ex,
 //            HttpHeaders headers,

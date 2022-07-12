@@ -5,9 +5,11 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 
-@Component
-public interface UserRepository extends CrudRepository<User, String> {
-    @Query(value = "Select top 1 * from users where email=?1", nativeQuery = true)
-    User findByEmail(@Param("email") String email);
+import java.util.List;
 
+@Component
+public interface PaymentsRepository extends CrudRepository<Payment, String> {
+
+    @Query(value = "Select * from payments where employee=?1", nativeQuery = true)
+    List<Payment> findByEmailPayment(@Param("employee") String employee);
 }
