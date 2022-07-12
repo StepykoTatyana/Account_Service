@@ -1,6 +1,7 @@
 package com.example.Account_Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 import org.springframework.stereotype.Component;
@@ -12,13 +13,15 @@ import javax.validation.constraints.Size;
 
 @Component
 @Entity
-public class Users {
-    public Users() {
+@Table(name = "users")
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class User {
+    public User() {
     }
 
     @Id
-    @GeneratedValue
-    @Column(columnDefinition = "bigint not null constraint user_pkey primary key")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column
@@ -29,10 +32,12 @@ public class Users {
     @NotEmpty
     private  String lastname;
 
-    @Column
+
     @NotEmpty
     @Pattern(regexp = ".+@acme.com$")
-    private  String email;
+    @Column(name = "email")
+    @JsonProperty("email")
+    public String email;
 
     @Column
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -44,6 +49,7 @@ public class Users {
     @Column
     private String role;
 
+
     public Long getId() {
         return id;
     }
@@ -53,7 +59,6 @@ public class Users {
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-
     @JsonIgnore
     public String getRole() {
         return role;
@@ -72,7 +77,7 @@ public class Users {
         this.password = password;
     }
 
-    public Users(String name, String lastname, String email, String password) {
+    public User(String name, String lastname, String email, String password) {
         this.name = name;
         this.lastname = lastname;
         this.email = email;
@@ -102,5 +107,7 @@ public class Users {
     public void setEmail(String email) {
         this.email = email;
     }
+
+
 
 }

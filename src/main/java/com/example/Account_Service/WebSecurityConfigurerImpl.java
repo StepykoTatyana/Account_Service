@@ -18,6 +18,7 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+
     @Autowired
     RestAuthenticationEntryPoint restAuthenticationEntryPoint = new RestAuthenticationEntryPoint();
 
@@ -39,10 +40,10 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // manage access
                 .antMatchers("/actuator/**").permitAll()
-                .mvcMatchers(HttpMethod.POST, "/api/auth/signup", "/actuator/shutdown").permitAll()
+                .mvcMatchers(HttpMethod.POST, "/api/auth/signup", "/actuator/shutdown", "/api/acct/payments").permitAll()
+                .mvcMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/auth/changepass").fullyAuthenticated()
                 .antMatchers(HttpMethod.GET,"/api/empl/payment").fullyAuthenticated()
-                .mvcMatchers("/api/acct/payments").hasAnyRole("Accountant")
                 .mvcMatchers("/api/admin/user").hasAnyRole("Administrator")
                 .mvcMatchers("/api/admin/user/role").hasAnyRole("Administrator")
                 .and().httpBasic().and().cors().disable().headers().frameOptions().disable()                .and()

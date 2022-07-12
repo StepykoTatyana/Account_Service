@@ -3,9 +3,7 @@ package com.example.Account_Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
@@ -16,17 +14,19 @@ import java.util.*;
 
 @Validated
 @RestController
-public class ItemsController {
+
+public class AuthController {
+
     @Autowired
-   PasswordEncoder encoder;
+    PasswordEncoder encoder;
 
     @Autowired
     UserDetailsServiceImpl userDetailsService;
+//
+//    @Autowired
+//    NewPassword newPassword;
 
-    @Autowired
-    NewPassword newPassword;
-
-    static public Users usersDefault = new Users("John", "Doe", "JohnDoe@acme.com", "secret");
+    static public User userDefault = new User("John", "Doe", "JohnDoe@acme.com", "secret");
 
     static public List<String> breachedPasswords =
             Arrays.asList("PasswordForJanuary", "PasswordForFebruary",
@@ -36,18 +36,20 @@ public class ItemsController {
 
 
     @PostMapping("/api/auth/signup")
-    public ResponseEntity<?> PostApi(@Validated @Valid @RequestBody Users userFromPost) {
-        System.out.println(userFromPost.getPassword());
+    public ResponseEntity<?> PostApiSignup(@Validated @Valid @RequestBody User userFromPost) {
         if (breachedPasswords.contains(userFromPost.getPassword())) {
             throw new UserExistException("The password is in the hacker's database!");
         } else {
-            Users user = new Users();
-            user.setName(userFromPost.getName());
-            user.setLastname(userFromPost.getLastname());
-            user.setEmail(userFromPost.getEmail().toLowerCase());
+            User user = new User();
+
             if (breachedPasswords.contains(userFromPost.getPassword())) {
                 throw new UserExistException("The password is in the hacker's database!");
             } else {
+                user.setName(userFromPost.getName());
+                user.setLastname(userFromPost.getLastname());
+                user.setEmail(userFromPost.getEmail().toLowerCase());
+                System.out.println(userFromPost.getPassword());
+                user.setPassword(encoder.encode(userFromPost.getPassword()));
                 if (userDetailsService.userRepo.findByEmail(userFromPost.getEmail().toLowerCase()) != null) {
                     throw new UserExistException("User exist!");
                 } else {
@@ -67,7 +69,7 @@ public class ItemsController {
             throw new UserExistException("The password is in the hacker's database!");
         } else {
             if (userDetailsService.userRepo.findByEmail(details.getUsername().toLowerCase()) != null) {
-                Users userFromBd = userDetailsService.userRepo.findByEmail(details.getUsername());
+                User userFromBd = userDetailsService.userRepo.findByEmail(details.getUsername());
                 if (!encoder.matches(newPassword.getNew_password(), userFromBd.getPassword())) {
                     userFromBd.setPassword(encoder.encode(newPassword.getNew_password()));
                     userDetailsService.userRepo.save(userFromBd);
@@ -85,20 +87,5 @@ public class ItemsController {
     }
 
 
-
-    @GetMapping("/api/empl/payment")
-    public ResponseEntity<?> username2(@AuthenticationPrincipal UserDetails details) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        Users user = userDetailsService.userRepo.findByEmail(details.getUsername());
-        if (user == null) {
-            if (details.getUsername().equals(usersDefault.getEmail())
-                    & details.getPassword().equals(usersDefault.getPassword())) {
-                user = usersDefault;
-                user.setPassword(encoder.encode(usersDefault.getPassword()));
-            }
-        }
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
 
 }
