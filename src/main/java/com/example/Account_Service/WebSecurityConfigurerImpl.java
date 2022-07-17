@@ -12,6 +12,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
@@ -30,7 +31,6 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
 
     }
 
-    // Acquiring the builder
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic()
@@ -40,15 +40,21 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests() // manage access
                 .antMatchers("/actuator/**").permitAll()
-                .mvcMatchers(HttpMethod.POST, "/api/auth/signup", "/actuator/shutdown", "/api/acct/payments").permitAll()
-                .mvcMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/auth/changepass").fullyAuthenticated()
-                .antMatchers(HttpMethod.GET,"/api/empl/payment").fullyAuthenticated()
-                .mvcMatchers("/api/admin/user").hasAnyRole("Administrator")
-                .mvcMatchers("/api/admin/user/role").hasAnyRole("Administrator")
-                .and().httpBasic().and().cors().disable().headers().frameOptions().disable()                .and()
+                .mvcMatchers(HttpMethod.POST, "/api/auth/signup", "/actuator/shutdown").permitAll()
+                .mvcMatchers(HttpMethod.PUT, "/api/admin/user/role").hasAnyRole("ADMINISTRATOR")
+                .mvcMatchers(HttpMethod.GET, "/api/admin/user").hasAnyRole("ADMINISTRATOR")
+                .mvcMatchers(HttpMethod.DELETE, "/api/admin/user/**").hasAnyRole("ADMINISTRATOR")
+                .antMatchers("/api/auth/changepass").fullyAuthenticated()
+                .antMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole("ACCOUNTANT", "USER")
+                .antMatchers("/api/acct/payments").hasRole("ACCOUNTANT")
+                .and().httpBasic().and().cors().disable().headers().frameOptions().disable().and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // no session;
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session;
+                .and().exceptionHandling()
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    CustomAccessDeniedHandler defaultAccessDeniedHandler = new CustomAccessDeniedHandler();
+                    defaultAccessDeniedHandler.handle(request, response, accessDeniedException);
+                });
     }
 
     @Bean

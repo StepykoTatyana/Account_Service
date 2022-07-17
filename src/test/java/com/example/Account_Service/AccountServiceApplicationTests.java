@@ -53,8 +53,11 @@ class AccountServiceApplicationTests {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
+    ArrayList<String> arrayList = new ArrayList<>();
 
-    User user = new User("Tatyana", "Stepyko", "johndoe@acme.com", "sdfsdfsdfsdf");
+
+    User user = new User("Tatyana", "Stepyko",
+            "johndoe@acme.com", "sdfsdfsdfsdf", arrayList);
     Payment payment = new Payment();
 
     List<Payment> list = new ArrayList<>();
@@ -87,17 +90,17 @@ class AccountServiceApplicationTests {
         user.setEmail("johndoe@acme.com");
         user.setPassword("sdfsdfsdfsdf");
         UserDetailsImpl userDetails = new UserDetailsImpl(user);
-        payment.setEmployee(user.getEmail());
+        payment.setEmployee(user.getEmail().toLowerCase());
         payment.setPeriod("31-2021");
         payment.setSalary((long) -5);
         list.add(payment);
-        try{
-            ResponseEntity<?>  responseEntity = userController.postPayment(list);
+        try {
+            ResponseEntity<?> responseEntity = userController.postPayment(list);
 
             System.out.println(responseEntity.getBody());
             System.out.println(responseEntity.getHeaders());
             System.out.println(responseEntity.getStatusCode());
-        }catch (ConstraintViolationException e){
+        } catch (ConstraintViolationException e) {
             System.out.println("!!!!!!!!!!!!!!!!!!");
             System.out.println(e.getMessage());
             System.out.println(e.getLocalizedMessage());
@@ -118,7 +121,6 @@ class AccountServiceApplicationTests {
                         .queryParam("period", "01-2021"))
                 .andDo(print())
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
 
 
     }

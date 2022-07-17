@@ -2,21 +2,14 @@ package com.example.Account_Service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 
-@Getter
-@Setter
-@Builder
+
 @Entity
 @Table(name = "payments")
-@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Payment {
 
@@ -56,28 +49,6 @@ public class Payment {
     @Column
     @Min(value = 1, message = "Salary must be non negative!")
     private Long salary;
-
-
-
-
-//    private User user;
-//
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
-
-
-//    public String getEmployee() {
-//        return employee.toLowerCase();
-//    }
-//
-//    public void setEmployee(String employee) {
-//        this.employee = employee.toLowerCase();
-//    }
 
     public String getPeriod() {
         return period;

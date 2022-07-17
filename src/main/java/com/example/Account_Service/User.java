@@ -1,6 +1,5 @@
 package com.example.Account_Service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
@@ -10,9 +9,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.util.*;
+
+
 
 @Component
-@Entity
+@Entity(name = "users")
 @Table(name = "users")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
@@ -20,23 +22,22 @@ public class User {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @GeneratedValue
+    @Column(name = "user_id", columnDefinition = "bigint not null")
     private Long id;
 
     @Column
     @NotEmpty
-    private  String name;
+    private String name;
 
     @Column
     @NotEmpty
-    private  String lastname;
+    private String lastname;
 
 
     @NotEmpty
     @Pattern(regexp = ".+@acme.com$")
     @Column(name = "email")
-    @JsonProperty("email")
     public String email;
 
     @Column
@@ -46,9 +47,10 @@ public class User {
     @Size(min = 12, message = "The password length must be at least 12 chars!")
     private String password;
 
-    @Column
-    private String role;
-
+    @ElementCollection
+    @CollectionTable(name = "roles", joinColumns = @JoinColumn(name = "email"))
+    @Transient
+    private List<String> roles = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -58,17 +60,6 @@ public class User {
         this.id = id;
     }
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @JsonIgnore
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -77,11 +68,12 @@ public class User {
         this.password = password;
     }
 
-    public User(String name, String lastname, String email, String password) {
+    public User(String name, String lastname, String email, String password, List<String> roles) {
         this.name = name;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+        this.roles=roles;
     }
 
     public String getName() {
@@ -101,13 +93,18 @@ public class User {
     }
 
     public String getEmail() {
-        return email;
+        return email.toLowerCase();
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.toLowerCase();
     }
 
+    public List<String> getRoles() {
+        return roles;
+    }
 
-
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }
