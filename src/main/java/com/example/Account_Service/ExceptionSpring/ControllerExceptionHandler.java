@@ -2,8 +2,10 @@ package com.example.Account_Service.ExceptionSpring;
 
 import com.example.Account_Service.CustomErrorMessageUsers;
 import com.example.Account_Service.UserExistException;
+import com.example.Account_Service.UserNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,11 +19,11 @@ import java.util.Objects;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler(UserExistException.class)
-    public ResponseEntity<CustomErrorMessageUsers> handleUserNotFound(
+    public ResponseEntity<CustomErrorMessageUsers> exists(
             UserExistException e, HttpServletRequest request) {
 
         CustomErrorMessageUsers body = new CustomErrorMessageUsers(
-                LocalDateTime.now(),
+                LocalDateTime.now().toString(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 e.getMessage(),
@@ -36,10 +38,10 @@ public class ControllerExceptionHandler {
 
 
         CustomErrorMessageUsers body = new CustomErrorMessageUsers(
-                LocalDateTime.now(),
+                LocalDateTime.now().toString(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                Objects.requireNonNull(m.getFieldError()).getDefaultMessage(),
+                Objects.requireNonNull(m.getBindingResult().getFieldError()).getDefaultMessage(),
                 request.getServletPath());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
@@ -52,7 +54,7 @@ public class ControllerExceptionHandler {
 
 
         CustomErrorMessageUsers body = new CustomErrorMessageUsers(
-                LocalDateTime.now(),
+                LocalDateTime.now().toString(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 m.getMessage(),
@@ -63,17 +65,33 @@ public class ControllerExceptionHandler {
     }
 
 
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-//            MethodArgumentNotValidException ex,
-//            HttpHeaders headers,
-//            HttpStatus status,
-//            WebRequest request) {
-//
-//        // Just like a POJO, a Map is also converted to a JSON key-value structure
-//        Map<String, Object> body = new LinkedHashMap<>();
-//        body.put("timestamp", LocalDateTime.now());
-//        body.put("status", status.value());
-//        body.put("exception", ex.getClass());
-//        return new ResponseEntity<>(body, headers, status);
-//    }
+
+    @ExceptionHandler(UserNotExistException.class)
+    public ResponseEntity<CustomErrorMessageUsers> handleUserNotFound(
+            UserNotExistException e, HttpServletRequest request) {
+
+        CustomErrorMessageUsers body = new CustomErrorMessageUsers(
+                LocalDateTime.now().toString(),
+                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND.getReasonPhrase(),
+                e.getMessage(),
+                request.getServletPath());
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CustomErrorMessageUsers> handleUserNotFound(
+            AccessDeniedException e, HttpServletRequest request) {
+
+        CustomErrorMessageUsers body = new CustomErrorMessageUsers(
+                LocalDateTime.now().toString(),
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                "Access Denied!",
+                request.getServletPath());
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
+
 }

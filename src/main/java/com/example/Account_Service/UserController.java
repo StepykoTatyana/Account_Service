@@ -30,25 +30,6 @@ public class UserController {
     @Autowired
     PaymentsRepository paymentsRepository;
 
-//    @Autowired
-//    ResponsePaymentGet responsePaymentGet;
-
-
-//    @GetMapping("/api/empl/payment")
-//    public ResponseEntity<?> getPayment(@AuthenticationPrincipal UserDetails details) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//
-//        User user = userDetailsService.userRepo.findByEmail(details.getUsername());
-////        if (user == null) {
-////            if (details.getUsername().equals(userDefault.getEmail())
-////                    & details.getPassword().equals(userDefault.getPassword())) {
-////                user = userDefault;
-////                user.setPassword(encoder.encode(userDefault.getPassword()));
-////            }
-////        }
-//        return new ResponseEntity<>(user, HttpStatus.OK);
-//    }
-
 
     @PostMapping("/api/acct/payments")
     public ResponseEntity<?> postPayment(@RequestBody List<@Valid Payment> payments) {
@@ -58,11 +39,11 @@ public class UserController {
             throw new UserExistException("Unknown user!");
         } else {
             for (Payment payment : payments) {
-                if (paymentsRepository.findByEmailPayment(payment.getEmployee()) != null) {
-                    List<Payment> payments1 = paymentsRepository.findByEmailPayment(payment.getEmployee());
+                if (paymentsRepository.findByEmailPayment(payment.getEmployee().toLowerCase()) != null) {
+                    List<Payment> payments1 = paymentsRepository.findByEmailPayment(payment.getEmployee().toLowerCase());
                     for (Payment payment1 : payments1) {
                         if (payment1.getPeriod().equalsIgnoreCase(payment.getPeriod())
-                                & payment1.getEmployee().equalsIgnoreCase(payment.getEmployee())) {
+                                & payment1.getEmployee().equalsIgnoreCase(payment.getEmployee().toLowerCase())) {
                             foundPeriod = true;
                             break;
                         }

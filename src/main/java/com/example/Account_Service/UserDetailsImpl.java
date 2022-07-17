@@ -1,27 +1,37 @@
 package com.example.Account_Service;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
     private final String username;
     private final String password;
+    private final List<GrantedAuthority> rolesAndAuthorities;
 
+    public List<GrantedAuthority> getRolesAndAuthorities() {
+        return rolesAndAuthorities;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+
+        return rolesAndAuthorities;
     }
 
 
     public UserDetailsImpl(User user) {
-        System.out.println(user.getEmail());
+        System.out.println(user.getEmail().toLowerCase());
         System.out.println(user.getPassword());
+        System.out.println(user.getRoles().get(0));
 
-        username = user.getEmail();
+        username = user.getEmail().toLowerCase();
         password = user.getPassword();
+        rolesAndAuthorities = user.getRoles().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        System.out.println(rolesAndAuthorities);
     }
 
 

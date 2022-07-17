@@ -1,14 +1,20 @@
 package com.example.Account_Service;
 
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
 public class CustomErrorMessageUsers extends ResponseEntityExceptionHandler {
-    private LocalDateTime timestamp;
+    private String timestamp;
     private int status;
     private String error;
     private String message;
     private String path;
+
+    public CustomErrorMessageUsers() {
+
+    }
 
     public String getError() {
         return error;
@@ -34,11 +40,11 @@ public class CustomErrorMessageUsers extends ResponseEntityExceptionHandler {
         this.status = status;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -52,7 +58,7 @@ public class CustomErrorMessageUsers extends ResponseEntityExceptionHandler {
 
 
     public CustomErrorMessageUsers(
-            LocalDateTime timestamp,
+            String timestamp,
             int status,
             String error,
             String message,
@@ -66,7 +72,7 @@ public class CustomErrorMessageUsers extends ResponseEntityExceptionHandler {
     }
 
     public CustomErrorMessageUsers(
-            LocalDateTime timestamp,
+            String timestamp,
             int status,
             String error,
             String path) {
