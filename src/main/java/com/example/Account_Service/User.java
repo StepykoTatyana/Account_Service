@@ -1,5 +1,6 @@
 package com.example.Account_Service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
@@ -10,7 +11,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.*;
-
 
 
 @Component
@@ -52,6 +52,18 @@ public class User {
     @Transient
     private List<String> roles = new ArrayList<>();
 
+
+    @JsonIgnore
+    private boolean locked = false;
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public void setLocked(boolean locked) {
+        this.locked = locked;
+    }
+
     public Long getId() {
         return id;
     }
@@ -73,7 +85,7 @@ public class User {
         this.lastname = lastname;
         this.email = email;
         this.password = password;
-        this.roles=roles;
+        this.roles = roles;
     }
 
     public String getName() {

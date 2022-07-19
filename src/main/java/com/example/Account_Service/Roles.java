@@ -3,6 +3,7 @@ package com.example.Account_Service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 
 @Entity
@@ -13,6 +14,7 @@ public class Roles {
     @JsonIgnore
     private Long id;
 
+    @NotEmpty
     @Column(name = "email")
     private String user;
 
@@ -64,6 +66,22 @@ public class Roles {
 
 
 enum operation {
-    REMOVE,
-    GRANT
+    REMOVE(1),
+    GRANT(2),
+    LOCK(3),
+    UNLOCK(4);
+
+    private int identityOperation;
+
+    public int getIdentityOperation() {
+        return identityOperation;
+    }
+
+    public void setIdentityOperation(int identityOperation) {
+        this.identityOperation = identityOperation;
+    }
+
+    operation(int identityOperation) {
+        this.identityOperation = identityOperation;
+    }
 }

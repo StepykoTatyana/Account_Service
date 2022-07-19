@@ -19,6 +19,9 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    LogRepository logRepository;
+
 
     @Autowired
     RestAuthenticationEntryPoint restAuthenticationEntryPoint = new RestAuthenticationEntryPoint();
@@ -47,13 +50,16 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/auth/changepass").fullyAuthenticated()
                 .antMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyRole("ACCOUNTANT", "USER")
                 .antMatchers("/api/acct/payments").hasRole("ACCOUNTANT")
-                .and().httpBasic().and().cors().disable().headers().frameOptions().disable().and()
+                .antMatchers("/api/admin/user/access").hasRole("ADMINISTRATOR")
+                .antMatchers("/api/security/events").hasRole("AUDITOR")
+                .and()
+                .httpBasic().and().cors().disable().headers().frameOptions().disable().and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session;
                 .and().exceptionHandling()
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     CustomAccessDeniedHandler defaultAccessDeniedHandler = new CustomAccessDeniedHandler();
-                    defaultAccessDeniedHandler.handle(request, response, accessDeniedException);
+                    defaultAccessDeniedHandler.handle(request, response, accessDeniedException, logRepository);
                 });
     }
 
